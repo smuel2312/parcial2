@@ -15,7 +15,7 @@ Stack de 5 servicios orquestados con Docker Compose, detrás de un único proxy 
 Requisitos: Docker Engine / Docker Desktop con Compose v2 y el puerto 80 libre.
 
 ```bash
-git clone <URL_DEL_REPO> parcial2
+git clone https://github.com/smuel2312/parcial2.git parcial2
 cd parcial2
 cp .env.example .env
 docker compose up -d
