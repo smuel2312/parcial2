@@ -1,0 +1,23 @@
+# Fuente de datos PostgreSQL aprovisionada automáticamente.
+# Grafana expande ${VAR} con las variables de entorno del contenedor.
+apiVersion: 1
+
+datasources:
+  - name: PostgreSQL-Joomla
+    uid: postgres-joomla
+    type: grafana-postgresql-datasource
+    access: proxy
+    url: ${POSTGRES_HOST}:${POSTGRES_PORT}
+    user: ${POSTGRES_USER}
+    isDefault: true
+    editable: false
+    jsonData:
+      database: ${POSTGRES_DB}
+      sslmode: disable
+      postgresVersion: 1600
+      timescaledb: false
+      maxOpenConns: 10
+      maxIdleConns: 5
+      connMaxLifetime: 14400
+    secureJsonData:
+      password: ${POSTGRES_PASSWORD}

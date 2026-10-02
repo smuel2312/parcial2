@@ -1,0 +1,5 @@
+﻿# Variables locales (se copian desde .env.example)
+.env
+
+# Checkpoints de Jupyter
+.ipynb_checkpoints/

@@ -1,0 +1,278 @@
+{
+  "uid": "joomla-logs",
+  "title": "Joomla - Actividad y Logs (Parcial 2)",
+  "description": "Métricas reales de PostgreSQL/Joomla y tráfico HTTP simulado. Aprovisionado automáticamente.",
+  "tags": ["parcial2", "joomla", "postgresql"],
+  "timezone": "browser",
+  "editable": false,
+  "graphTooltip": 1,
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "version": 1,
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "templating": { "list": [] },
+  "annotations": { "list": [] },
+  "links": [],
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Conexiones activas a PostgreSQL",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(*) AS \"conexiones\" FROM pg_stat_activity WHERE datname = current_database();"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 50 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Tamaño de la base de datos",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT pg_database_size(current_database()) AS \"tamano\";"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": { "mode": "fixed", "fixedColor": "blue" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Tablas de Joomla instaladas",
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(*) AS \"tablas\" FROM information_schema.tables WHERE table_schema = 'public' AND table_name LIKE 'jos\\_%';"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "fixed", "fixedColor": "purple" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Transacciones confirmadas (commit)",
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT xact_commit AS \"commits\" FROM pg_stat_database WHERE datname = current_database();"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "fixed", "fixedColor": "green" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Tráfico HTTP hacia Joomla (actividad simulada)",
+      "description": "Serie sintética generada con generate_series() en PostgreSQL para ilustrar el flujo de peticiones a través de Nginx.",
+      "gridPos": { "h": 9, "w": 16, "x": 0, "y": 5 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT ts AS \"time\",\n       round((60 + 35 * sin(extract(epoch FROM ts) / 1800.0) + random() * 20)::numeric, 0) AS \"peticiones_2xx\",\n       round((6 + 4 * cos(extract(epoch FROM ts) / 2400.0) + random() * 3)::numeric, 0) AS \"errores_4xx_5xx\"\nFROM generate_series(date_trunc('minute', $__timeFrom()::timestamptz), $__timeTo()::timestamptz, interval '5 minutes') AS ts\nORDER BY 1;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqpm",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "errores_4xx_5xx" },
+            "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } } ]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "none" }
+      }
+    },
+    {
+      "id": 6,
+      "type": "piechart",
+      "title": "Distribución de códigos HTTP (simulada)",
+      "gridPos": { "h": 9, "w": 8, "x": 16, "y": 5 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT codigo AS \"metric\", peso AS \"value\"\nFROM (VALUES ('200 OK', 820), ('301/302 Redirect', 95), ('304 Not Modified', 140), ('404 Not Found', 37), ('500 Server Error', 6)) AS t(codigo, peso);"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "palette-classic" } },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": true },
+        "pieType": "donut",
+        "displayLabels": ["percent"],
+        "legend": { "displayMode": "list", "placement": "right", "showLegend": true },
+        "tooltip": { "mode": "single", "sort": "none" }
+      }
+    },
+    {
+      "id": 7,
+      "type": "barchart",
+      "title": "Actividad real por tabla de Joomla (filas insertadas)",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 14 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT relname AS \"tabla\", n_tup_ins AS \"insertadas\", n_tup_upd AS \"actualizadas\"\nFROM pg_stat_user_tables\nORDER BY n_tup_ins DESC\nLIMIT 10;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "palette-classic" } },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "xField": "tabla",
+        "showValue": "auto",
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.9,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "none" }
+      }
+    },
+    {
+      "id": 8,
+      "type": "table",
+      "title": "Logs de acciones de Joomla (jos_action_logs)",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 14 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres-joomla" },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT l.log_date AS \"fecha\", COALESCE(u.username, 'sistema') AS \"usuario\", l.extension, l.message_language_key AS \"evento\", l.ip_address AS \"ip\"\nFROM jos_action_logs l\nLEFT JOIN jos_users u ON u.id = l.user_id\nUNION ALL\nSELECT u.\"registerDate\", u.username, 'com_users', 'USUARIO_REGISTRADO (instalacion)', '-'\nFROM jos_users u\nORDER BY 1 DESC\nLIMIT 50;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "auto", "cellOptions": { "type": "auto" } } },
+        "overrides": []
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } }
+    }
+  ]
+}

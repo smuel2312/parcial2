@@ -1,0 +1,14 @@
+# Proveedor de dashboards: carga todos los .json de esta carpeta.
+apiVersion: 1
+
+providers:
+  - name: parcial2-dashboards
+    orgId: 1
+    folder: ""
+    type: file
+    disableDeletion: true
+    allowUiUpdates: false
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      foldersFromFilesStructure: false

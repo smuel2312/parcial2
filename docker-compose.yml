@@ -1,0 +1,209 @@
+# =====================================================================
+# Parcial 2 práctico - Despliegue multi-contenedor (Zero-Touch)
+#   cp .env.example .env && docker compose up -d
+#
+#   Host :80 ──► nginx ──┬─► joomla  :80   ──► database :5432
+#                        ├─► jupyter :8888 ──► database :5432
+#                        └─► grafana :3000 ──► database :5432
+# =====================================================================
+
+name: parcial2
+
+services:
+
+  # -------------------------------------------------------------------
+  # Proxy inverso: ÚNICO servicio publicado al host
+  # -------------------------------------------------------------------
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      frontend_net:
+        ipv4_address: 172.28.1.10
+    depends_on:
+      joomla:
+        condition: service_healthy
+      jupyter:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/nginx-health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------------------------------------
+  # CMS Joomla (instalación automática contra PostgreSQL)
+  # -------------------------------------------------------------------
+  joomla:
+    image: joomla:latest
+    container_name: joomla
+    restart: unless-stopped
+    environment:
+      JOOMLA_DB_TYPE: pgsql
+      JOOMLA_DB_HOST: ${POSTGRES_HOST:-database}
+      JOOMLA_DB_PORT: ${POSTGRES_PORT:-5432}
+      JOOMLA_DB_NAME: ${POSTGRES_DB}
+      JOOMLA_DB_USER: ${POSTGRES_USER}
+      JOOMLA_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      JOOMLA_DB_PREFIX: ${JOOMLA_DB_PREFIX:-jos_}
+      # Variables que activan la instalación desatendida del sitio
+      JOOMLA_SITE_NAME: ${JOOMLA_SITE_NAME:-Parcial2 Joomla}
+      JOOMLA_ADMIN_USER: ${JOOMLA_ADMIN_USER:-Administrador}
+      JOOMLA_ADMIN_USERNAME: ${JOOMLA_ADMIN_USERNAME:-admin}
+      JOOMLA_ADMIN_PASSWORD: ${JOOMLA_ADMIN_PASSWORD:-AdminParcial2026!}
+      JOOMLA_ADMIN_EMAIL: ${JOOMLA_ADMIN_EMAIL:-admin@parcial2.local}
+    volumes:
+      - joomla_data:/var/www/html
+    networks:
+      frontend_net:
+        ipv4_address: 172.28.1.20
+      backend_net:
+        ipv4_address: 172.28.2.20
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
+
+  # -------------------------------------------------------------------
+  # PostgreSQL: SOLO en backend_net, sin puertos publicados
+  # -------------------------------------------------------------------
+  database:
+    image: postgres:16-alpine
+    container_name: database
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      backend_net:
+        ipv4_address: 172.28.2.30
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # -------------------------------------------------------------------
+  # Jupyter (servido bajo /jupyter/, sin token)
+  # Se conecta también a backend_net para que el notebook alcance
+  # a PostgreSQL (database solo vive en backend_net).
+  # -------------------------------------------------------------------
+  jupyter:
+    image: jupyter/minimal-notebook:latest
+    container_name: jupyter
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST:-database}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      JOOMLA_DB_PREFIX: ${JOOMLA_DB_PREFIX:-jos_}
+    command:
+      - bash
+      - -c
+      - >-
+        pip install --no-cache-dir --quiet --upgrade psycopg2-binary sqlalchemy pandas matplotlib &&
+        exec start-notebook.sh
+        --ServerApp.base_url=/jupyter/
+        --ServerApp.token=''
+        --ServerApp.password=''
+        --ServerApp.allow_origin='*'
+        --ServerApp.trust_xheaders=True
+        --ServerApp.root_dir=/home/jovyan/work
+    volumes:
+      - ./jupyter/notebooks:/home/jovyan/work
+    networks:
+      frontend_net:
+        ipv4_address: 172.28.1.40
+      backend_net:
+        ipv4_address: 172.28.2.40
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8888/jupyter/api', timeout=5)\" || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
+
+  # -------------------------------------------------------------------
+  # Grafana (servido bajo /grafana/, acceso anónimo de lectura)
+  # -------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      # Datos usados por el aprovisionamiento del datasource
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST:-database}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      JOOMLA_DB_PREFIX: ${JOOMLA_DB_PREFIX:-jos_}
+      # Publicación detrás del proxy en /grafana/
+      GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s/grafana/"
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      # Acceso anónimo de solo lectura
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_NAME: "Main Org."
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Viewer"
+      GF_AUTH_DISABLE_LOGIN_FORM: "false"
+      GF_SECURITY_ADMIN_USER: ${GF_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_ADMIN_PASSWORD:-admin}
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/provisioning/dashboards/joomla_logs.json
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_NEWS_NEWS_FEED_ENABLED: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+    networks:
+      frontend_net:
+        ipv4_address: 172.28.1.50
+      backend_net:
+        ipv4_address: 172.28.2.50
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+networks:
+  frontend_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.1.0/24
+  backend_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.2.0/24
+
+volumes:
+  joomla_data:
+  db_data:
+  grafana_data:
