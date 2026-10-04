@@ -51,10 +51,10 @@
 | Contenedor | Imagen | frontend_net | backend_net | Puerto interno | Publicado en host |
 |---|---|---|---|---|---|
 | nginx | `nginx:alpine` | 172.28.1.10 | — | 80/tcp | **80:80** |
-| joomla | `joomla:latest` | 172.28.1.20 | 172.28.2.20 | 80/tcp | no |
+| joomla | `joomla:6.1.4-php8.4-apache` | 172.28.1.20 | 172.28.2.20 | 80/tcp | no |
 | database | `postgres:16-alpine` | — | 172.28.2.30 | 5432/tcp | **no** |
 | jupyter | `jupyter/minimal-notebook` | 172.28.1.40 | 172.28.2.40 | 8888/tcp | no |
-| grafana | `grafana/grafana:latest` | 172.28.1.50 | 172.28.2.50 | 3000/tcp | no |
+| grafana | `grafana/grafana:13.2.3` | 172.28.1.50 | 172.28.2.50 | 3000/tcp | no |
 
 > **Decisión de diseño:** `jupyter` se conecta también a `backend_net`. Sin esa segunda interfaz el
 > notebook `analisis_datos.ipynb` no podría alcanzar a `database`, que por requisito vive **solo**

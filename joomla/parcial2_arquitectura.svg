@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 960" width="1600" height="960" font-family="'Segoe UI', system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1023"/>
+      <stop offset="0.55" stop-color="#1a1446"/>
+      <stop offset="1" stop-color="#3a0c55"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#d946ef" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#d946ef" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#67e8f9"/>
+      <stop offset="0.5" stop-color="#a5b4fc"/>
+      <stop offset="1" stop-color="#f0abfc"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1e2547" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#131833" stop-opacity="0.95"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+    <filter id="neon" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity="0.04"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#e2e8f0"/>
+    </marker>
+  </defs>
+
+  <!-- Fondo -->
+  <rect width="1600" height="960" fill="url(#bg)"/>
+  <rect width="1600" height="960" fill="url(#grid)"/>
+  <circle cx="180" cy="120" r="320" fill="url(#glowA)"/>
+  <circle cx="1450" cy="820" r="380" fill="url(#glowB)"/>
+  <circle cx="1350" cy="90" r="200" fill="url(#glowA)"/>
+
+  <!-- Encabezado -->
+  <rect x="60" y="44" width="372" height="38" rx="19" fill="#22d3ee" fill-opacity="0.15" stroke="#22d3ee" stroke-opacity="0.6"/>
+  <text x="246" y="69" text-anchor="middle" font-size="17" font-weight="700" fill="#67e8f9" letter-spacing="3">PARCIAL 2 · PRÁCTICO</text>
+  <text x="60" y="140" font-size="52" font-weight="800" fill="url(#title)">Despliegue multi-contenedor Zero-Touch</text>
+  <text x="60" y="186" font-size="24" fill="#cbd5e1">5 servicios orquestados con Docker Compose · 2 redes aisladas · 1 solo comando:</text>
+  <rect x="1010" y="160" width="290" height="38" rx="8" fill="#0f172a" stroke="#34d399" stroke-opacity="0.7"/>
+  <text x="1155" y="186" text-anchor="middle" font-size="20" font-family="Consolas, 'Courier New', monospace" fill="#6ee7b7">$ docker compose up -d</text>
+
+  <!-- Zonas de red -->
+  <rect x="250" y="240" width="810" height="520" rx="26" fill="#22d3ee" fill-opacity="0.06" stroke="#22d3ee" stroke-opacity="0.7" stroke-width="2" stroke-dasharray="10 8"/>
+  <text x="276" y="276" font-size="19" font-weight="700" fill="#67e8f9">frontend_net</text>
+  <text x="400" y="276" font-size="17" fill="#67e8f9" fill-opacity="0.75">172.28.1.0/24</text>
+  <rect x="800" y="250" width="760" height="500" rx="26" fill="#c084fc" fill-opacity="0.07" stroke="#c084fc" stroke-opacity="0.75" stroke-width="2" stroke-dasharray="10 8"/>
+  <text x="1534" y="286" text-anchor="end" font-size="19" font-weight="700" fill="#e9d5ff">backend_net</text>
+  <text x="1406" y="286" text-anchor="end" font-size="17" fill="#e9d5ff" fill-opacity="0.75">172.28.2.0/24</text>
+  <text x="1534" y="736" text-anchor="end" font-size="15" fill="#e9d5ff" fill-opacity="0.7">red interna · sin acceso desde el host</text>
+
+  <!-- Flechas animadas: host -> nginx -->
+  <g fill="none" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)">
+    <path d="M222 505H296" stroke="#e2e8f0" stroke-dasharray="10 8">
+      <animate attributeName="stroke-dashoffset" from="36" to="0" dur="1s" repeatCount="indefinite"/>
+    </path>
+    <!-- nginx -> apps -->
+    <path d="M542 470C690 470 690 350 836 350" stroke="#60a5fa" stroke-dasharray="10 8">
+      <animate attributeName="stroke-dashoffset" from="36" to="0" dur="1s" repeatCount="indefinite"/>
+    </path>
+    <path d="M542 505H836" stroke="#facc15" stroke-dasharray="10 8">
+      <animate attributeName="stroke-dashoffset" from="36" to="0" dur="1s" repeatCount="indefinite"/>
+    </path>
+    <path d="M542 540C690 540 690 660 836 660" stroke="#fb923c" stroke-dasharray="10 8">
+      <animate attributeName="stroke-dashoffset" from="36" to="0" dur="1s" repeatCount="indefinite"/>
+    </path>
+    <!-- apps -> database -->
+    <path d="M1042 350C1150 350 1150 470 1256 470" stroke="#c084fc" stroke-dasharray="10 8">
+      <animate attributeName="stroke-dashoffset" from="36" to="0" dur="1.2s" repeatCount="indefinite"/>
+    </path>
+    <path d="M1042 505H1256" stroke="#c084fc" stroke-dasharray="10 8">
+      <animate attributeName="stroke-dashoffset" from="36" to="0" dur="1.2s" repeatCount="indefinite"/>
+    </path>
+    <path d="M1042 660C1150 660 1150 540 1256 540" stroke="#c084fc" stroke-dasharray="10 8">
+      <animate attributeName="stroke-dashoffset" from="36" to="0" dur="1.2s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- Etiquetas de rutas -->
+  <g font-family="Consolas, 'Courier New', monospace" font-size="16" font-weight="700">
+    <rect x="604" y="378" width="162" height="28" rx="14" fill="#0f172a" stroke="#60a5fa"/>
+    <text x="685" y="398" text-anchor="middle" fill="#93c5fd">/ /administrator</text>
+    <rect x="630" y="476" width="110" height="28" rx="14" fill="#0f172a" stroke="#facc15"/>
+    <text x="685" y="496" text-anchor="middle" fill="#fde68a">/jupyter/</text>
+    <rect x="630" y="604" width="110" height="28" rx="14" fill="#0f172a" stroke="#fb923c"/>
+    <text x="685" y="624" text-anchor="middle" fill="#fdba74">/grafana/</text>
+    <rect x="1100" y="476" width="100" height="28" rx="14" fill="#0f172a" stroke="#c084fc"/>
+    <text x="1150" y="496" text-anchor="middle" fill="#e9d5ff">SQL :5432</text>
+  </g>
+
+  <!-- Host -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="420" width="182" height="170" rx="20" fill="url(#card)" stroke="#e2e8f0" stroke-opacity="0.5" stroke-width="2"/>
+  </g>
+  <rect x="96" y="440" width="70" height="46" rx="6" fill="none" stroke="#e2e8f0" stroke-width="3"/>
+  <path d="M116 494H146M131 486V494" stroke="#e2e8f0" stroke-width="3"/>
+  <text x="131" y="530" text-anchor="middle" font-size="21" font-weight="700" fill="#f8fafc">Navegador</text>
+  <text x="131" y="556" text-anchor="middle" font-size="16" fill="#94a3b8">Host</text>
+  <text x="131" y="578" text-anchor="middle" font-size="16" font-family="Consolas, monospace" fill="#e2e8f0">localhost:80</text>
+
+  <!-- nginx -->
+  <g filter="url(#shadow)">
+    <rect x="300" y="400" width="242" height="210" rx="22" fill="url(#card)" stroke="#34d399" stroke-width="3"/>
+  </g>
+  <rect x="300" y="400" width="242" height="8" rx="4" fill="#34d399"/>
+  <rect x="320" y="426" width="54" height="54" rx="14" fill="#34d399" filter="url(#neon)"/>
+  <text x="347" y="462" text-anchor="middle" font-size="28" font-weight="800" fill="#052e1f">N</text>
+  <text x="388" y="450" font-size="25" font-weight="800" fill="#f8fafc">nginx</text>
+  <text x="388" y="474" font-size="15" fill="#6ee7b7">nginx:alpine</text>
+  <text x="320" y="512" font-size="17" fill="#e2e8f0">Proxy inverso</text>
+  <text x="320" y="538" font-size="17" fill="#e2e8f0">Único puerto publicado</text>
+  <text x="320" y="590" font-size="15" font-family="Consolas, monospace" fill="#94a3b8">172.28.1.10</text>
+  <rect x="440" y="574" width="86" height="24" rx="12" fill="#34d399" fill-opacity="0.2"/>
+  <text x="483" y="591" text-anchor="middle" font-size="13" font-weight="700" fill="#6ee7b7">● healthy</text>
+
+  <!-- Joomla -->
+  <g filter="url(#shadow)">
+    <rect x="840" y="290" width="202" height="122" rx="18" fill="url(#card)" stroke="#60a5fa" stroke-width="3"/>
+  </g>
+  <rect x="856" y="306" width="44" height="44" rx="12" fill="#60a5fa" filter="url(#neon)"/>
+  <text x="878" y="336" text-anchor="middle" font-size="22" font-weight="800" fill="#0b1a3a">J</text>
+  <text x="912" y="326" font-size="22" font-weight="800" fill="#f8fafc">Joomla 6</text>
+  <text x="912" y="346" font-size="13" fill="#93c5fd">CMS auto-instalado</text>
+  <text x="856" y="376" font-size="14" fill="#cbd5e1">vol joomla_data</text>
+  <text x="856" y="398" font-size="14" font-family="Consolas, monospace" fill="#94a3b8">.1.20 · .2.20</text>
+
+  <!-- Jupyter -->
+  <g filter="url(#shadow)">
+    <rect x="840" y="444" width="202" height="122" rx="18" fill="url(#card)" stroke="#facc15" stroke-width="3"/>
+  </g>
+  <rect x="856" y="460" width="44" height="44" rx="12" fill="#facc15" filter="url(#neon)"/>
+  <text x="878" y="490" text-anchor="middle" font-size="20" font-weight="800" fill="#3a2a00">Jp</text>
+  <text x="912" y="480" font-size="22" font-weight="800" fill="#f8fafc">Jupyter</text>
+  <text x="912" y="500" font-size="14" fill="#fde68a">Análisis con pandas</text>
+  <text x="856" y="530" font-size="14" fill="#cbd5e1">notebooks + informe</text>
+  <text x="856" y="552" font-size="14" font-family="Consolas, monospace" fill="#94a3b8">.1.40 · .2.40</text>
+
+  <!-- Grafana -->
+  <g filter="url(#shadow)">
+    <rect x="840" y="598" width="202" height="122" rx="18" fill="url(#card)" stroke="#fb923c" stroke-width="3"/>
+  </g>
+  <rect x="856" y="614" width="44" height="44" rx="12" fill="#fb923c" filter="url(#neon)"/>
+  <text x="878" y="644" text-anchor="middle" font-size="22" font-weight="800" fill="#3a1600">G</text>
+  <text x="912" y="634" font-size="22" font-weight="800" fill="#f8fafc">Grafana</text>
+  <text x="912" y="654" font-size="14" fill="#fdba74">Dashboard de logs</text>
+  <text x="856" y="684" font-size="14" fill="#cbd5e1">aprovisionado · anónimo</text>
+  <text x="856" y="706" font-size="14" font-family="Consolas, monospace" fill="#94a3b8">.1.50 · .2.50</text>
+
+  <!-- PostgreSQL -->
+  <g filter="url(#shadow)">
+    <rect x="1260" y="400" width="262" height="210" rx="22" fill="url(#card)" stroke="#c084fc" stroke-width="3"/>
+  </g>
+  <rect x="1260" y="400" width="262" height="8" rx="4" fill="#c084fc"/>
+  <g transform="translate(1280 424)" filter="url(#neon)">
+    <ellipse cx="28" cy="10" rx="26" ry="9" fill="#c084fc"/>
+    <path d="M2 10V46C2 51 14 55 28 55S54 51 54 46V10C54 15 42 19 28 19S2 15 2 10Z" fill="#a855f7"/>
+    <path d="M2 28C2 33 14 37 28 37S54 33 54 28" fill="none" stroke="#e9d5ff" stroke-width="2"/>
+  </g>
+  <text x="1348" y="450" font-size="22" font-weight="800" fill="#f8fafc">PostgreSQL 16</text>
+  <text x="1348" y="474" font-size="15" fill="#e9d5ff">servicio database</text>
+  <text x="1280" y="512" font-size="17" fill="#e2e8f0">Datos de Joomla y logs</text>
+  <text x="1280" y="538" font-size="17" fill="#e2e8f0">Sin puertos al host</text>
+  <text x="1280" y="590" font-size="15" font-family="Consolas, monospace" fill="#94a3b8">172.28.2.30</text>
+  <rect x="1400" y="574" width="106" height="24" rx="12" fill="#c084fc" fill-opacity="0.2"/>
+  <text x="1453" y="591" text-anchor="middle" font-size="13" font-weight="700" fill="#e9d5ff">vol db_data</text>
+
+  <!-- Características -->
+  <g font-size="18" font-weight="600">
+    <rect x="60" y="790" width="350" height="56" rx="28" fill="#ffffff" fill-opacity="0.06" stroke="#34d399" stroke-opacity="0.6"/>
+    <circle cx="94" cy="818" r="11" fill="#34d399"/>
+    <path d="M88 818l4 4 8-8" fill="none" stroke="#052e1f" stroke-width="3"/>
+    <text x="116" y="824" fill="#f1f5f9">Healthchecks en los 5 servicios</text>
+
+    <rect x="430" y="790" width="350" height="56" rx="28" fill="#ffffff" fill-opacity="0.06" stroke="#c084fc" stroke-opacity="0.6"/>
+    <rect x="456" y="812" width="20" height="16" rx="3" fill="#c084fc"/>
+    <path d="M460 812v-5a6 6 0 0 1 12 0v5" fill="none" stroke="#c084fc" stroke-width="3"/>
+    <text x="490" y="824" fill="#f1f5f9">Base de datos aislada</text>
+
+    <rect x="800" y="790" width="350" height="56" rx="28" fill="#ffffff" fill-opacity="0.06" stroke="#60a5fa" stroke-opacity="0.6"/>
+    <circle cx="834" cy="818" r="11" fill="none" stroke="#60a5fa" stroke-width="4" stroke-dasharray="5 3"/>
+    <text x="856" y="824" fill="#f1f5f9">Instalación desatendida</text>
+
+    <rect x="1170" y="790" width="370" height="56" rx="28" fill="#ffffff" fill-opacity="0.06" stroke="#fb923c" stroke-opacity="0.6"/>
+    <ellipse cx="1204" cy="812" rx="11" ry="5" fill="#fb923c"/>
+    <path d="M1193 812v12c0 3 5 5 11 5s11-2 11-5v-12" fill="#fb923c" fill-opacity="0.6"/>
+    <text x="1226" y="824" fill="#f1f5f9">Volúmenes persistentes</text>
+  </g>
+
+  <!-- Autores -->
+  <line x1="60" y1="884" x2="1540" y2="884" stroke="#ffffff" stroke-opacity="0.12"/>
+  <text x="60" y="924" font-size="19" fill="#94a3b8">Autores: <tspan fill="#f8fafc" font-weight="700">Samuel Arevalo · Juan Pablo Novoa · Miguel Gordillo</tspan></text>
+  <text x="1540" y="924" text-anchor="end" font-size="18" font-family="Consolas, monospace" fill="#94a3b8">github.com/smuel2312/parcial2</text>
+</svg>

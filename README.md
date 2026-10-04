@@ -5,10 +5,10 @@ Stack de 5 servicios orquestados con Docker Compose, detrás de un único proxy 
 | Servicio | Imagen | Ruta pública |
 |---|---|---|
 | nginx | `nginx:alpine` | puerto **80** (único expuesto) |
-| joomla | `joomla:latest` | http://localhost/ |
+| joomla | `joomla:6.1.4-php8.4-apache` | http://localhost/ |
 | database | `postgres:16-alpine` | — (solo red interna `backend_net`) |
 | jupyter | `jupyter/minimal-notebook` | http://localhost/jupyter/ |
-| grafana | `grafana/grafana:latest` | http://localhost/grafana/ |
+| grafana | `grafana/grafana:13.2.3` | http://localhost/grafana/ |
 
 ## Despliegue rápido (Zero-Touch)
 
