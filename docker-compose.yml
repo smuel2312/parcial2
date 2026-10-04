@@ -45,6 +45,10 @@ services:
     image: joomla:6.1.4-php8.4-apache   # versión fijada (probada)
     container_name: joomla
     restart: unless-stopped
+    # Envoltorio del entrypoint oficial: además publica la infografía
+    # del proyecto en el panel de la Administración tras la instalación
+    entrypoint: ["bash", "/parcial2/init-infografia.sh"]
+    command: ["apache2-foreground"]
     environment:
       JOOMLA_DB_TYPE: pgsql
       JOOMLA_DB_HOST: ${POSTGRES_HOST:-database}
@@ -61,6 +65,7 @@ services:
       JOOMLA_ADMIN_EMAIL: ${JOOMLA_ADMIN_EMAIL:-admin@parcial2.local}
     volumes:
       - joomla_data:/var/www/html
+      - ./joomla:/parcial2:ro
     networks:
       frontend_net:
         ipv4_address: 172.28.1.20
