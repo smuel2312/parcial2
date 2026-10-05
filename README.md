@@ -61,3 +61,4 @@ docker compose down -v              # detener y borrar volúmenes (reinstalació
 ```
 
 El análisis completo de redes y del modelo OSI está en [INFORME.md](INFORME.md).
+...
